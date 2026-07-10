@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Infinite Widget Carousel · Cosmic Audit</title>
-    <!-- Font Awesome 6 -->
+    <title>Spaceship Command · Infinite Scroll</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         /* ----- RESET & BASE ----- */
@@ -23,58 +22,137 @@
             position: relative;
         }
 
-        /* Particles */
-        .particles {
+        /* ===== COCKPIT VIEWPORT ===== */
+        .warp-stars {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 0;
             pointer-events: none;
             overflow: hidden;
+            background: #06060e;
         }
-        .particle {
+
+        .warp-star {
             position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.10);
-            animation: floatParticle linear infinite;
-        }
-        @keyframes floatParticle {
-            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-10vh) scale(0.8); opacity: 0; }
+            animation: warpFly linear infinite;
+            opacity: 0.8;
         }
 
-        /* Nebula */
-        .nebula-glow {
+        @keyframes warpFly {
+            0% {
+                transform: translate(0, 0) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .cockpit-frame {
             position: fixed;
-            border-radius: 50%;
-            filter: blur(120px);
-            pointer-events: none;
+            inset: 20px;
             z-index: 1;
-            opacity: 0.10;
-        }
-        .nebula-glow.g1 {
-            width: 600px;
-            height: 600px;
-            top: -10%;
-            left: -5%;
-            background: radial-gradient(circle, #7b2ffc, transparent 70%);
-        }
-        .nebula-glow.g2 {
-            width: 500px;
-            height: 500px;
-            bottom: -10%;
-            right: -5%;
-            background: radial-gradient(circle, #00d4ff, transparent 70%);
+            pointer-events: none;
+            border: 2px solid rgba(0, 212, 255, 0.15);
+            border-radius: 40px 40px 20px 20px;
+            box-shadow: inset 0 0 60px rgba(0, 212, 255, 0.03), 0 0 80px rgba(0, 0, 0, 0.6);
+            background: transparent;
         }
 
-        /* ----- MAIN CONTAINER ----- */
+        .cockpit-frame::before,
+        .cockpit-frame::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(0, 212, 255, 0.15);
+            pointer-events: none;
+        }
+        .cockpit-frame::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 40px 0 0 0;
+        }
+        .cockpit-frame::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 40px 0;
+        }
+
+        .hud-lines {
+            position: fixed;
+            inset: 30px;
+            z-index: 1;
+            pointer-events: none;
+            border: 1px solid rgba(0, 212, 255, 0.02);
+            border-radius: 30px;
+        }
+        .hud-lines::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px dashed rgba(0, 212, 255, 0.03);
+            border-radius: 20px;
+        }
+
+        .hud-status {
+            position: fixed;
+            z-index: 2;
+            pointer-events: none;
+            font-family: 'Courier New', monospace;
+            font-size: 0.65rem;
+            color: rgba(0, 212, 255, 0.25);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .hud-status.top-left {
+            top: 30px;
+            left: 40px;
+            text-align: left;
+        }
+        .hud-status.top-right {
+            top: 30px;
+            right: 40px;
+            text-align: right;
+        }
+        .hud-status.bottom-left {
+            bottom: 30px;
+            left: 40px;
+            text-align: left;
+        }
+        .hud-status.bottom-right {
+            bottom: 30px;
+            right: 40px;
+            text-align: right;
+        }
+        .hud-status .value {
+            color: rgba(0, 212, 255, 0.5);
+            font-weight: 600;
+        }
+
+        /* ----- CONTENT (above cockpit) ----- */
         .container {
             position: relative;
-            z-index: 2;
+            z-index: 3;
             max-width: 1320px;
             margin: 0 auto;
             padding: 1.8rem 1.5rem 3rem;
@@ -145,7 +223,7 @@
             border: 1px solid rgba(255, 200, 50, 0.12);
         }
 
-        /* ===== LARGE ORBIT SECTION ===== */
+        /* ===== ORBIT SECTION ===== */
         .orbit-section {
             position: relative;
             display: flex;
@@ -156,42 +234,185 @@
             width: 100%;
         }
 
+        .hub-wrapper {
+            position: relative;
+            z-index: 5;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hub-glow-ring {
+            position: absolute;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border: 1px solid rgba(0, 212, 255, 0.08);
+            animation: glowRingPulse 4s ease-in-out infinite;
+        }
+        .hub-glow-ring.r1 {
+            width: 280px;
+            height: 280px;
+            animation-delay: 0s;
+            border-color: rgba(0, 212, 255, 0.06);
+        }
+        .hub-glow-ring.r2 {
+            width: 340px;
+            height: 340px;
+            animation-delay: 0.8s;
+            border-color: rgba(123, 47, 252, 0.05);
+        }
+        .hub-glow-ring.r3 {
+            width: 400px;
+            height: 400px;
+            animation-delay: 1.6s;
+            border-color: rgba(0, 212, 255, 0.03);
+        }
+
+        @keyframes glowRingPulse {
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.08);
+                opacity: 0.8;
+            }
+        }
+
+        .hub-orbits {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+            z-index: 4;
+        }
+        .hub-orbit-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00d4ff;
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
+            animation: orbitDot 6s linear infinite;
+        }
+        .hub-orbit-dot:nth-child(1) { animation-duration: 6s; animation-delay: 0s; background: #00d4ff; }
+        .hub-orbit-dot:nth-child(2) { animation-duration: 7.5s; animation-delay: 1.2s; background: #7b2ffc; }
+        .hub-orbit-dot:nth-child(3) { animation-duration: 5.5s; animation-delay: 2.5s; background: #ff2d95; }
+        .hub-orbit-dot:nth-child(4) { animation-duration: 8s; animation-delay: 0.5s; background: #ffd866; }
+        .hub-orbit-dot:nth-child(5) { animation-duration: 6.8s; animation-delay: 3.2s; background: #00e676; }
+
+        @keyframes orbitDot {
+            0% {
+                transform: rotate(0deg) translateX(150px) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: rotate(360deg) translateX(150px) rotate(-360deg);
+                opacity: 1;
+            }
+        }
+
         .hub {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.05), rgba(123, 47, 252, 0.08));
+            background: radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.08), rgba(123, 47, 252, 0.12));
             border: 1px solid rgba(255, 255, 255, 0.04);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 80px rgba(0, 212, 255, 0.03), inset 0 0 60px rgba(123, 47, 252, 0.02);
-            z-index: 5;
             text-align: center;
             backdrop-filter: blur(6px);
-            flex-shrink: 0;
+            animation: hubPulse 3s ease-in-out infinite;
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.05), inset 0 0 60px rgba(123, 47, 252, 0.03), 0 0 120px rgba(0, 212, 255, 0.02);
         }
+
+        @keyframes hubPulse {
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 60px rgba(0, 212, 255, 0.05), inset 0 0 60px rgba(123, 47, 252, 0.03), 0 0 120px rgba(0, 212, 255, 0.02);
+            }
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 80px rgba(0, 212, 255, 0.12), inset 0 0 80px rgba(123, 47, 252, 0.06), 0 0 160px rgba(0, 212, 255, 0.05);
+            }
+        }
+
+        .hub::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            padding: 2px;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 212, 255, 0.15), transparent, rgba(123, 47, 252, 0.15), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: hubBorderSpin 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes hubBorderSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         .hub .big-score {
-            font-size: 3.6rem;
+            font-size: 3.8rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc, #00d4ff);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1;
+            animation: scoreShimmer 4s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
         }
+
+        @keyframes scoreShimmer {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
         .hub .label {
             font-size: 0.8rem;
             color: #a0a0b8;
             letter-spacing: 0.08em;
             text-transform: uppercase;
             margin-top: 0.1rem;
+            position: relative;
+            z-index: 2;
         }
         .hub .sub-label {
             font-size: 0.6rem;
             color: #6a6a82;
+            position: relative;
+            z-index: 2;
         }
 
         .orbit-ring {
@@ -203,9 +424,33 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
-        .orbit-ring.r1 { width: 500px; height: 500px; border-color: rgba(0, 212, 255, 0.04); }
-        .orbit-ring.r2 { width: 640px; height: 640px; border-color: rgba(123, 47, 252, 0.03); }
-        .orbit-ring.r3 { width: 780px; height: 780px; border-color: rgba(255, 45, 149, 0.02); }
+        .orbit-ring.r1 {
+            width: 500px;
+            height: 500px;
+            border-color: rgba(0, 212, 255, 0.04);
+            animation: ringRotate 40s linear infinite;
+        }
+        .orbit-ring.r2 {
+            width: 640px;
+            height: 640px;
+            border-color: rgba(123, 47, 252, 0.03);
+            animation: ringRotate 60s linear infinite reverse;
+        }
+        .orbit-ring.r3 {
+            width: 780px;
+            height: 780px;
+            border-color: rgba(255, 45, 149, 0.02);
+            animation: ringRotate 80s linear infinite;
+        }
+
+        @keyframes ringRotate {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
 
         .node {
             position: absolute;
@@ -232,12 +477,36 @@
             transform: translate(-50%, -50%) scale(1.15);
             border-color: rgba(255, 255, 255, 0.12);
         }
-        .node .icon { font-size: 1.6rem; margin-bottom: 0.05rem; }
-        .node .name { font-size: 0.55rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: #b0b0c8; line-height: 1.1; }
-        .node .score-badge { font-size: 0.55rem; font-weight: 600; background: rgba(0,0,0,0.3); padding: 0.05rem 0.4rem; border-radius: 20px; margin-top: 0.05rem; border: 1px solid rgba(255,255,255,0.04); }
-        .node.high .score-badge { color: #00e676; }
-        .node.mid .score-badge { color: #ffb347; }
-        .node.low .score-badge { color: #ff4d6d; }
+        .node .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.05rem;
+        }
+        .node .name {
+            font-size: 0.55rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #b0b0c8;
+            line-height: 1.1;
+        }
+        .node .score-badge {
+            font-size: 0.55rem;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.05rem 0.4rem;
+            border-radius: 20px;
+            margin-top: 0.05rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .node.high .score-badge {
+            color: #00e676;
+        }
+        .node.mid .score-badge {
+            color: #ffb347;
+        }
+        .node.low .score-badge {
+            color: #ff4d6d;
+        }
 
         /* ----- DETAIL OVERLAY ----- */
         .detail-overlay {
@@ -255,8 +524,17 @@
             padding: 1.5rem;
             animation: fadeIn 0.3s ease;
         }
-        .detail-overlay.open { display: flex; }
-        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+        .detail-overlay.open {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
 
         .detail-panel {
             background: rgba(20, 20, 34, 0.92);
@@ -270,7 +548,16 @@
             animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1);
             backdrop-filter: blur(16px);
         }
-        @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUp {
+            0% {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
         .detail-panel .close-btn {
             position: absolute;
@@ -282,7 +569,9 @@
             font-size: 1.2rem;
             cursor: pointer;
         }
-        .detail-panel .close-btn:hover { color: #fff; }
+        .detail-panel .close-btn:hover {
+            color: #fff;
+        }
 
         .detail-panel .d-header {
             display: flex;
@@ -301,8 +590,16 @@
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.04);
         }
-        .detail-panel .d-header .d-title { font-size: 1.2rem; font-weight: 600; }
-        .detail-panel .d-header .d-sub { font-size: 0.7rem; color: #a0a0b8; display: block; font-weight: 400; }
+        .detail-panel .d-header .d-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .detail-panel .d-header .d-sub {
+            font-size: 0.7rem;
+            color: #a0a0b8;
+            display: block;
+            font-weight: 400;
+        }
 
         .detail-panel .d-score {
             display: flex;
@@ -310,22 +607,42 @@
             gap: 1rem;
             margin: 0.4rem 0 0.6rem;
             padding: 0.3rem 0.6rem;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border-radius: 40px;
-            border: 1px solid rgba(255,255,255,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
-        .detail-panel .d-score .num { font-size: 1.5rem; font-weight: 700; }
-        .detail-panel .d-score .bar { flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 12px; }
-        .detail-panel .d-score .bar .fill { height: 100%; border-radius: 12px; width: 0%; }
-        .detail-panel .d-score .tag { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; padding: 0.05rem 0.6rem; border-radius: 40px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); }
+        .detail-panel .d-score .num {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .detail-panel .d-score .bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+        .detail-panel .d-score .bar .fill {
+            height: 100%;
+            border-radius: 12px;
+            width: 0%;
+        }
+        .detail-panel .d-score .tag {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 0.05rem 0.6rem;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
 
         .detail-panel .d-idea {
             font-size: 0.85rem;
             color: #b0b0c8;
             padding: 0.3rem 0.6rem;
-            background: rgba(255,255,255,0.01);
+            background: rgba(255, 255, 255, 0.01);
             border-radius: 12px;
-            border-left: 2px solid rgba(255,255,255,0.04);
+            border-left: 2px solid rgba(255, 255, 255, 0.04);
             margin: 0.3rem 0 0.6rem;
         }
         .detail-panel .d-pros-cons {
@@ -334,9 +651,19 @@
             gap: 0.6rem;
             margin-bottom: 0.6rem;
         }
-        .detail-panel .d-pros-cons .block { font-size: 0.75rem; color: #b0b0c8; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.01); border-radius: 10px; }
-        .detail-panel .d-pros-cons .block strong { color: #e8e8f0; }
-        .detail-panel .d-pros-cons .block .emoji { margin-right: 4px; }
+        .detail-panel .d-pros-cons .block {
+            font-size: 0.75rem;
+            color: #b0b0c8;
+            padding: 0.3rem 0.5rem;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 10px;
+        }
+        .detail-panel .d-pros-cons .block strong {
+            color: #e8e8f0;
+        }
+        .detail-panel .d-pros-cons .block .emoji {
+            margin-right: 4px;
+        }
 
         .detail-panel .d-action {
             background: rgba(0, 212, 255, 0.02);
@@ -349,8 +676,13 @@
             gap: 0.5rem;
             align-items: flex-start;
         }
-        .detail-panel .d-action i { color: #00d4ff; margin-top: 0.1rem; }
-        .detail-panel .d-action strong { color: #e8e8f0; }
+        .detail-panel .d-action i {
+            color: #00d4ff;
+            margin-top: 0.1rem;
+        }
+        .detail-panel .d-action strong {
+            color: #e8e8f0;
+        }
 
         /* ===== INFINITE CAROUSEL ===== */
         .carousel-section {
@@ -358,7 +690,6 @@
             padding-top: 2rem;
             border-top: 1px solid rgba(255, 255, 255, 0.02);
         }
-
         .carousel-section .section-title {
             font-size: 1.4rem;
             font-weight: 500;
@@ -383,14 +714,16 @@
             padding: 0.5rem 0;
             background: rgba(255, 255, 255, 0.01);
             border: 1px solid rgba(255, 255, 255, 0.02);
+            cursor: grab;
         }
 
         .carousel-track {
             display: flex;
             gap: 1.2rem;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             will-change: transform;
             padding: 0.2rem 0.5rem;
+            transition: none;
+            /* We handle transform manually via JS */;
         }
 
         .carousel-item {
@@ -404,12 +737,12 @@
             text-align: center;
             transition: border-color 0.3s, box-shadow 0.3s;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            user-select: none;
         }
         .carousel-item:hover {
             border-color: rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
-
         .carousel-item .widget-label {
             font-size: 0.7rem;
             font-weight: 500;
@@ -423,7 +756,7 @@
             margin-bottom: 0.6rem;
         }
 
-        /* --- Widgets --- */
+        /* Widgets (mini) */
         .wheel-sm {
             width: 90px;
             height: 90px;
@@ -446,7 +779,7 @@
             font-size: 0.5rem;
             font-weight: 600;
             color: #fff;
-            text-shadow: 0 0 4px rgba(0,0,0,0.3);
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
         }
         .wheel-sm .dot {
             position: absolute;
@@ -471,26 +804,50 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .spin-sm-btn:hover { background: rgba(0, 212, 255, 0.12); }
-        .wheel-result-sm { font-size: 0.65rem; color: #a0a0b8; min-height: 1.2em; margin-top: 0.15rem; }
+        .spin-sm-btn:hover {
+            background: rgba(0, 212, 255, 0.12);
+        }
+        .wheel-result-sm {
+            font-size: 0.65rem;
+            color: #a0a0b8;
+            min-height: 1.2em;
+            margin-top: 0.15rem;
+        }
 
         .react-sm {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 12px;
             padding: 0.6rem;
             cursor: pointer;
             transition: 0.2s;
             user-select: none;
         }
-        .react-sm.waiting { background: rgba(255, 200, 50, 0.02); border-color: rgba(255, 200, 50, 0.05); }
-        .react-sm.ready { background: rgba(0, 230, 118, 0.02); border-color: rgba(0, 230, 118, 0.05); }
-        .react-sm.click { background: rgba(255, 45, 85, 0.02); border-color: rgba(255, 45, 85, 0.05); }
-        .react-sm .r-status { font-size: 0.7rem; color: #b0b0c8; }
-        .react-sm .r-time { font-size: 1rem; font-weight: 600; color: #00d4ff; margin-top: 0.05rem; }
+        .react-sm.waiting {
+            background: rgba(255, 200, 50, 0.02);
+            border-color: rgba(255, 200, 50, 0.05);
+        }
+        .react-sm.ready {
+            background: rgba(0, 230, 118, 0.02);
+            border-color: rgba(0, 230, 118, 0.05);
+        }
+        .react-sm.click {
+            background: rgba(255, 45, 85, 0.02);
+            border-color: rgba(255, 45, 85, 0.05);
+        }
+        .react-sm .r-status {
+            font-size: 0.7rem;
+            color: #b0b0c8;
+        }
+        .react-sm .r-time {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-top: 0.05rem;
+        }
         .react-reset-sm {
             background: none;
-            border: 1px solid rgba(255,255,255,0.04);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             color: #6a6a82;
             padding: 0.05rem 0.5rem;
             border-radius: 20px;
@@ -505,12 +862,15 @@
             font-variant-numeric: tabular-nums;
             transition: color 0.5s;
         }
-        .clock-sm .c-date { font-size: 0.5rem; color: #6a6a82; }
+        .clock-sm .c-date {
+            font-size: 0.5rem;
+            color: #6a6a82;
+        }
         .clock-sm .c-dot {
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.04);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             margin: 0.2rem auto 0;
             transition: background 0.5s;
         }
@@ -524,12 +884,16 @@
             background-clip: text;
             font-variant-numeric: tabular-nums;
         }
-        .counter-label { font-size: 0.6rem; color: #6a6a82; margin-top: 0.1rem; }
+        .counter-label {
+            font-size: 0.6rem;
+            color: #6a6a82;
+            margin-top: 0.1rem;
+        }
 
         .progress-track {
             width: 100%;
             height: 6px;
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
             border-radius: 12px;
             overflow: hidden;
             margin: 0.3rem 0;
@@ -541,12 +905,28 @@
             background: linear-gradient(90deg, #00d4ff, #7b2ffc);
             transition: width 0.1s linear;
         }
-        .progress-label { font-size: 0.6rem; color: #a0a0b8; }
-        .progress-value { font-size: 0.8rem; font-weight: 600; color: #00d4ff; }
+        .progress-label {
+            font-size: 0.6rem;
+            color: #a0a0b8;
+        }
+        .progress-value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
 
-        .weather-icon { font-size: 2rem; }
-        .weather-temp { font-size: 1.6rem; font-weight: 600; color: #c0c0d8; }
-        .weather-desc { font-size: 0.6rem; color: #6a6a82; }
+        .weather-icon {
+            font-size: 2rem;
+        }
+        .weather-temp {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #c0c0d8;
+        }
+        .weather-desc {
+            font-size: 0.6rem;
+            color: #6a6a82;
+        }
 
         .typing-display {
             font-size: 0.8rem;
@@ -565,7 +945,15 @@
             animation: blink 0.8s infinite;
             vertical-align: text-bottom;
         }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
 
         .pulse-ring {
             width: 60px;
@@ -581,72 +969,51 @@
             animation: pulseRing 2s ease-in-out infinite;
         }
         @keyframes pulseRing {
-            0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.1); }
-            50% { box-shadow: 0 0 0 12px rgba(0, 212, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 0 12px rgba(0, 212, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 212, 255, 0);
+            }
         }
-        .pulse-ring .inner { font-size: 1.2rem; color: #00d4ff; }
-        .pulse-label { font-size: 0.6rem; color: #6a6a82; }
+        .pulse-ring .inner {
+            font-size: 1.2rem;
+            color: #00d4ff;
+        }
+        .pulse-label {
+            font-size: 0.6rem;
+            color: #6a6a82;
+        }
 
+        /* Carousel Controls */
         .carousel-controls {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1.2rem;
+            gap: 1.5rem;
             margin-top: 1.2rem;
         }
-        .carousel-controls button {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: #a0a0b8;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-        }
-        .carousel-controls button:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
-
-        .carousel-dots {
-            display: flex;
-            gap: 0.4rem;
-        }
-        .carousel-dots .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
-            transition: 0.3s;
-            cursor: pointer;
-            border: none;
-            padding: 0;
-        }
-        .carousel-dots .dot.active {
-            background: #00d4ff;
-            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
-            width: 16px;
-            border-radius: 4px;
-        }
-        .carousel-dots .dot:hover { background: rgba(255, 255, 255, 0.15); }
-
         .carousel-pause-indicator {
-            font-size: 0.55rem;
+            font-size: 0.6rem;
             color: #6a6a82;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
             cursor: pointer;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: 0.3s;
+        }
+        .carousel-pause-indicator:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
         }
 
-        /* ----- FOOTER ----- */
         .footer {
             margin-top: 3rem;
             text-align: center;
@@ -664,60 +1031,244 @@
             margin-top: 0.3rem;
         }
         .footer .badges span {
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             padding: 0.05rem 0.6rem;
             border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.02);
+            border: 1px solid rgba(255, 255, 255, 0.02);
             font-size: 0.55rem;
             color: #a0a0b8;
         }
 
-        /* ----- RESPONSIVE ----- */
+        /* RESPONSIVE */
         @media (max-width: 900px) {
-            .orbit-section { min-height: 550px; }
-            .hub { width: 160px; height: 160px; }
-            .hub .big-score { font-size: 2.8rem; }
-            .orbit-ring.r1 { width: 400px; height: 400px; }
-            .orbit-ring.r2 { width: 520px; height: 520px; }
-            .orbit-ring.r3 { width: 640px; height: 640px; }
-            .node { width: 70px; height: 70px; }
-            .node .icon { font-size: 1.2rem; }
-            .node .name { font-size: 0.45rem; }
-            .node .score-badge { font-size: 0.45rem; }
-            .detail-panel { max-width: 95%; padding: 1.2rem; }
-            .detail-panel .d-pros-cons { grid-template-columns: 1fr; }
+            .orbit-section {
+                min-height: 520px;
+            }
+            .hub {
+                width: 150px;
+                height: 150px;
+            }
+            .hub .big-score {
+                font-size: 2.8rem;
+            }
+            .hub-glow-ring.r1 {
+                width: 220px;
+                height: 220px;
+            }
+            .hub-glow-ring.r2 {
+                width: 270px;
+                height: 270px;
+            }
+            .hub-glow-ring.r3 {
+                width: 320px;
+                height: 320px;
+            }
+            @keyframes orbitDot {
+                0% {
+                    transform: rotate(0deg) translateX(110px) rotate(0deg);
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.4;
+                }
+                100% {
+                    transform: rotate(360deg) translateX(110px) rotate(-360deg);
+                    opacity: 1;
+                }
+            }
+            .orbit-ring.r1 {
+                width: 400px;
+                height: 400px;
+            }
+            .orbit-ring.r2 {
+                width: 500px;
+                height: 500px;
+            }
+            .orbit-ring.r3 {
+                width: 600px;
+                height: 600px;
+            }
+            .node {
+                width: 70px;
+                height: 70px;
+            }
+            .node .icon {
+                font-size: 1.2rem;
+            }
+            .node .name {
+                font-size: 0.45rem;
+            }
+            .node .score-badge {
+                font-size: 0.45rem;
+            }
+            .detail-panel {
+                max-width: 95%;
+                padding: 1.2rem;
+            }
+            .detail-panel .d-pros-cons {
+                grid-template-columns: 1fr;
+            }
+            .cockpit-frame {
+                inset: 10px;
+                border-radius: 20px;
+            }
+            .hud-status {
+                font-size: 0.5rem;
+            }
+            .hud-status.top-left {
+                top: 15px;
+                left: 20px;
+            }
+            .hud-status.top-right {
+                top: 15px;
+                right: 20px;
+            }
+            .hud-status.bottom-left {
+                bottom: 15px;
+                left: 20px;
+            }
+            .hud-status.bottom-right {
+                bottom: 15px;
+                right: 20px;
+            }
         }
 
         @media (max-width: 600px) {
-            .header { flex-direction: column; align-items: stretch; text-align: center; }
-            .header .score-pill { justify-content: center; }
-            .orbit-section { min-height: 420px; padding: 1rem 0; }
-            .hub { width: 120px; height: 120px; }
-            .hub .big-score { font-size: 2rem; }
-            .orbit-ring.r1 { width: 300px; height: 300px; }
-            .orbit-ring.r2 { width: 380px; height: 380px; }
-            .orbit-ring.r3 { width: 460px; height: 460px; }
-            .node { width: 56px; height: 56px; }
-            .node .icon { font-size: 0.9rem; }
-            .node .name { font-size: 0.35rem; }
-            .node .score-badge { font-size: 0.35rem; padding: 0.02rem 0.25rem; }
-            .carousel-item { min-width: 160px; }
-            .counter-display { font-size: 1.6rem; }
-            .weather-temp { font-size: 1.2rem; }
-            .clock-sm .c-time { font-size: 1rem; }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .header .score-pill {
+                justify-content: center;
+            }
+            .orbit-section {
+                min-height: 400px;
+                padding: 1rem 0;
+            }
+            .hub {
+                width: 110px;
+                height: 110px;
+            }
+            .hub .big-score {
+                font-size: 2rem;
+            }
+            .hub-glow-ring.r1 {
+                width: 160px;
+                height: 160px;
+            }
+            .hub-glow-ring.r2 {
+                width: 200px;
+                height: 200px;
+            }
+            .hub-glow-ring.r3 {
+                width: 240px;
+                height: 240px;
+            }
+            @keyframes orbitDot {
+                0% {
+                    transform: rotate(0deg) translateX(80px) rotate(0deg);
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.4;
+                }
+                100% {
+                    transform: rotate(360deg) translateX(80px) rotate(-360deg);
+                    opacity: 1;
+                }
+            }
+            .orbit-ring.r1 {
+                width: 280px;
+                height: 280px;
+            }
+            .orbit-ring.r2 {
+                width: 350px;
+                height: 350px;
+            }
+            .orbit-ring.r3 {
+                width: 420px;
+                height: 420px;
+            }
+            .node {
+                width: 52px;
+                height: 52px;
+            }
+            .node .icon {
+                font-size: 0.8rem;
+            }
+            .node .name {
+                font-size: 0.35rem;
+            }
+            .node .score-badge {
+                font-size: 0.35rem;
+                padding: 0.02rem 0.25rem;
+            }
+            .carousel-item {
+                min-width: 160px;
+            }
+            .counter-display {
+                font-size: 1.6rem;
+            }
+            .weather-temp {
+                font-size: 1.2rem;
+            }
+            .clock-sm .c-time {
+                font-size: 1rem;
+            }
+            .cockpit-frame {
+                inset: 6px;
+                border-radius: 14px;
+            }
+            .hud-status {
+                font-size: 0.4rem;
+            }
+            .hud-status.top-left {
+                top: 10px;
+                left: 12px;
+            }
+            .hud-status.top-right {
+                top: 10px;
+                right: 12px;
+            }
+            .hud-status.bottom-left {
+                bottom: 10px;
+                left: 12px;
+            }
+            .hud-status.bottom-right {
+                bottom: 10px;
+                right: 12px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- PARTICLES -->
-    <div class="particles" id="particles"></div>
-    <div class="nebula-glow g1"></div>
-    <div class="nebula-glow g2"></div>
+    <!-- ===== COCKPIT VIEWPORT ===== -->
+    <div class="warp-stars" id="warpStars"></div>
+    <div class="cockpit-frame"></div>
+    <div class="hud-lines"></div>
 
+    <div class="hud-status top-left">
+        <div>status <span class="value">● online</span></div>
+        <div style="margin-top:2px;">nav <span class="value">cruise</span></div>
+    </div>
+    <div class="hud-status top-right">
+        <div>speed <span class="value">warp 1.2</span></div>
+        <div style="margin-top:2px;">heading <span class="value">045°</span></div>
+    </div>
+    <div class="hud-status bottom-left">
+        <div>systems <span class="value">nominal</span></div>
+        <div style="margin-top:2px;">comm <span class="value">active</span></div>
+    </div>
+    <div class="hud-status bottom-right">
+        <div>fuel <span class="value">97%</span></div>
+        <div style="margin-top:2px;">core <span class="value">stable</span></div>
+    </div>
+
+    <!-- ===== CONTENT ===== -->
     <div class="container">
 
-        <!-- HEADER -->
         <header class="header">
             <div class="brand">
                 <span class="logo">⟁ Command Bridge</span>
@@ -730,16 +1281,30 @@
             </div>
         </header>
 
-        <!-- LARGE ORBIT SECTION -->
+        <!-- ORBIT SECTION -->
         <section class="orbit-section" id="orbitSection">
             <div class="orbit-ring r1"></div>
             <div class="orbit-ring r2"></div>
             <div class="orbit-ring r3"></div>
-            <div class="hub">
-                <div class="big-score">5.5</div>
-                <div class="label">/ 10</div>
-                <div class="sub-label">7 worlds</div>
+
+            <div class="hub-wrapper">
+                <div class="hub-glow-ring r1"></div>
+                <div class="hub-glow-ring r2"></div>
+                <div class="hub-glow-ring r3"></div>
+                <div class="hub-orbits" id="hubOrbits">
+                    <div class="hub-orbit-dot"></div>
+                    <div class="hub-orbit-dot"></div>
+                    <div class="hub-orbit-dot"></div>
+                    <div class="hub-orbit-dot"></div>
+                    <div class="hub-orbit-dot"></div>
+                </div>
+                <div class="hub">
+                    <div class="big-score">5.5</div>
+                    <div class="label">/ 10</div>
+                    <div class="sub-label">7 worlds</div>
+                </div>
             </div>
+
             <div id="nodesContainer"></div>
         </section>
 
@@ -754,21 +1319,16 @@
         <!-- INFINITE CAROUSEL -->
         <section class="carousel-section">
             <h3 class="section-title"><i class="fas fa-infinity" style="margin-right:8px;font-size:1.2rem;"></i> Infinite Widget Carousel</h3>
-            <p class="section-sub">8 interactive FedPromptly widgets · auto‑scrolls forever</p>
+            <p class="section-sub">8 interactive FedPromptly widgets · never stops, never repeats</p>
 
             <div class="carousel-wrapper" id="carouselWrapper">
-                <div class="carousel-track" id="carouselTrack">
-                    <!-- Widgets populated by JS -->
-                </div>
+                <div class="carousel-track" id="carouselTrack"></div>
             </div>
 
             <div class="carousel-controls">
-                <button id="carouselPrev" title="Previous"><i class="fas fa-chevron-left"></i></button>
-                <div class="carousel-dots" id="carouselDots"></div>
-                <button id="carouselNext" title="Next"><i class="fas fa-chevron-right"></i></button>
-                <div class="carousel-pause-indicator">
-                    <i class="fas fa-play" id="pauseIcon"></i>
-                    <span id="pauseLabel">auto</span>
+                <div class="carousel-pause-indicator" id="pauseIndicator">
+                    <i class="fas fa-pause" id="pauseIcon"></i>
+                    <span id="pauseLabel">pause</span>
                 </div>
             </div>
         </section>
@@ -786,6 +1346,34 @@
     </div>
 
     <script>
+        // ============================================================
+        // WARP STARFIELD (reduced particles)
+        // ============================================================
+        (function createWarpStars() {
+            const container = document.getElementById('warpStars');
+            const numStars = 80; // reduced from 200 to 80
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'warp-star';
+                const size = 1 + Math.random() * 2.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                const angle = Math.random() * 2 * Math.PI;
+                const dist = 150 + Math.random() * 350;
+                const dx = Math.cos(angle) * dist;
+                const dy = Math.sin(angle) * dist;
+                star.style.setProperty('--dx', dx + 'px');
+                star.style.setProperty('--dy', dy + 'px');
+                const duration = 4 + Math.random() * 8;
+                star.style.animationDuration = duration + 's';
+                star.style.animationDelay = Math.random() * 10 + 's';
+                star.style.opacity = 0.2 + Math.random() * 0.5;
+                container.appendChild(star);
+            }
+        })();
+
         // ============================================================
         // DATA (worlds)
         // ============================================================
@@ -869,7 +1457,7 @@
         }];
 
         // ============================================================
-        // ORBIT NODES (LARGE)
+        // ORBIT NODES
         // ============================================================
         const nodesContainer = document.getElementById('nodesContainer');
         const orbitSection = document.getElementById('orbitSection');
@@ -898,7 +1486,6 @@
             });
         });
 
-        // Orbit animation - larger radius
         let angle = 0;
         const speed = 0.0018;
         const count = worlds.length;
@@ -974,35 +1561,13 @@
         });
 
         // ============================================================
-        // PARTICLES
-        // ============================================================
-        (function() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                const size = 2 + Math.random() * 4;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.animationDuration = 20 + Math.random() * 40 + 's';
-                p.style.animationDelay = Math.random() * 30 + 's';
-                p.style.opacity = 0.15 + Math.random() * 0.25;
-                container.appendChild(p);
-            }
-        })();
-
-        // ============================================================
-        // INFINITE CAROUSEL
+        // INFINITE CAROUSEL (Continuous Scroll)
         // ============================================================
         const track = document.getElementById('carouselTrack');
-        const dotsContainer = document.getElementById('carouselDots');
-        const prevBtn = document.getElementById('carouselPrev');
-        const nextBtn = document.getElementById('carouselNext');
+        const pauseIndicator = document.getElementById('pauseIndicator');
         const pauseIcon = document.getElementById('pauseIcon');
         const pauseLabel = document.getElementById('pauseLabel');
 
-        // --- Widget definitions (8 widgets) ---
         const widgetTypes = [
             { id: 'spinner', label: 'Spinner', desc: 'tap to spin' },
             { id: 'reaction', label: 'Reaction', desc: 'click on green' },
@@ -1014,7 +1579,6 @@
             { id: 'pulse', label: 'Pulse Ring', desc: 'beating heart' }
         ];
 
-        // Build widget HTML
         function buildWidgetHTML(type, index) {
             let inner = '';
             const uid = 'w' + index;
@@ -1037,7 +1601,6 @@
                         <div class="wheel-result-sm" id="${uid}Result">🎯 ready</div>
                     `;
                     break;
-
                 case 'reaction':
                     inner = `
                         <div class="react-sm waiting" id="${uid}React">
@@ -1047,7 +1610,6 @@
                         <button class="react-reset-sm" id="${uid}Reset"><i class="fas fa-undo"></i> reset</button>
                     `;
                     break;
-
                 case 'clock':
                     inner = `
                         <div class="clock-sm">
@@ -1057,14 +1619,12 @@
                         </div>
                     `;
                     break;
-
                 case 'counter':
                     inner = `
                         <div class="counter-display" id="${uid}Counter">0</div>
                         <div class="counter-label">auto-counting</div>
                     `;
                     break;
-
                 case 'progress':
                     inner = `
                         <div class="progress-value" id="${uid}ProgVal">0%</div>
@@ -1072,7 +1632,6 @@
                         <div class="progress-label">cycling</div>
                     `;
                     break;
-
                 case 'weather':
                     inner = `
                         <div class="weather-icon" id="${uid}WeatherIcon">☀️</div>
@@ -1080,13 +1639,11 @@
                         <div class="weather-desc" id="${uid}WeatherDesc">Sunny</div>
                     `;
                     break;
-
                 case 'typing':
                     inner = `
                         <div class="typing-display" id="${uid}Typing">_</div>
                     `;
                     break;
-
                 case 'pulse':
                     inner = `
                         <div class="pulse-ring" id="${uid}Pulse">
@@ -1095,7 +1652,6 @@
                         <div class="pulse-label">❤️ beating</div>
                     `;
                     break;
-
                 default:
                     inner = '<div style="color:#6a6a82;">widget</div>';
             }
@@ -1109,9 +1665,10 @@
             `;
         }
 
+        // Build carousel with 2 copies for seamless infinite scroll
         function buildCarousel() {
             track.innerHTML = '';
-            for (let copy = 0; copy < 3; copy++) {
+            for (let copy = 0; copy < 2; copy++) {
                 widgetTypes.forEach((type, i) => {
                     const idx = copy * widgetTypes.length + i;
                     const html = buildWidgetHTML(type, idx);
@@ -1119,160 +1676,75 @@
                 });
             }
             initWidgets();
-            updateDots();
-            goToSlide(1);
         }
 
-        // --- Carousel state ---
-        let currentSlide = 0;
-        const totalSlides = widgetTypes.length;
-        let autoPlayInterval = null;
+        // Infinite scroll engine
+        let offset = 0;
+        const scrollSpeed = 1.2; // pixels per frame
         let isPaused = false;
-        let isTransitioning = false;
+        let animationId = null;
 
-        function getSlideWidth() {
-            const firstItem = track.querySelector('.carousel-item');
-            if (!firstItem) return 220;
-            return firstItem.offsetWidth + 12;
+        function getFirstItemWidth() {
+            const first = track.querySelector('.carousel-item');
+            if (!first) return 220;
+            return first.offsetWidth + 12; // width + gap
         }
 
-        function goToSlide(index, animate = true) {
-            if (isTransitioning) return;
-            const slideWidth = getSlideWidth();
-            const offset = -index * slideWidth;
-            track.style.transition = animate ? 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
-            track.style.transform = `translateX(${offset}px)`;
-            currentSlide = index;
-            updateDots();
-        }
+        function scrollCarousel() {
+            if (!isPaused) {
+                offset -= scrollSpeed;
+                const itemWidth = getFirstItemWidth();
+                const firstItem = track.querySelector('.carousel-item');
 
-        function nextSlide() {
-            if (isTransitioning) return;
-            const slideWidth = getSlideWidth();
-            const totalItems = track.querySelectorAll('.carousel-item').length;
-            const maxIndex = totalItems - 1;
-
-            if (currentSlide >= maxIndex - 1) {
-                isTransitioning = true;
-                goToSlide(currentSlide + 1, true);
-                setTimeout(() => {
-                    track.style.transition = 'none';
-                    const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
-                    const offset = -midIndex * slideWidth;
-                    track.style.transform = `translateX(${offset}px)`;
-                    currentSlide = midIndex;
-                    updateDots();
-                    setTimeout(() => {
-                        track.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        isTransitioning = false;
-                    }, 50);
-                }, 750);
-            } else {
-                goToSlide(currentSlide + 1, true);
-            }
-        }
-
-        function prevSlide() {
-            if (isTransitioning) return;
-            const slideWidth = getSlideWidth();
-            const totalItems = track.querySelectorAll('.carousel-item').length;
-            const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
-
-            if (currentSlide <= 0) {
-                isTransitioning = true;
-                goToSlide(currentSlide - 1, true);
-                setTimeout(() => {
-                    track.style.transition = 'none';
-                    const offset = -midIndex * slideWidth;
-                    track.style.transform = `translateX(${offset}px)`;
-                    currentSlide = midIndex;
-                    updateDots();
-                    setTimeout(() => {
-                        track.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        isTransitioning = false;
-                    }, 50);
-                }, 750);
-            } else {
-                goToSlide(currentSlide - 1, true);
-            }
-        }
-
-        function updateDots() {
-            const totalItems = track.querySelectorAll('.carousel-item').length;
-            const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
-            const relativeIndex = currentSlide - midIndex;
-            const dots = dotsContainer.querySelectorAll('.dot');
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === relativeIndex);
-            });
-        }
-
-        function buildDots() {
-            dotsContainer.innerHTML = '';
-            for (let i = 0; i < totalSlides; i++) {
-                const dot = document.createElement('button');
-                dot.className = 'dot' + (i === 0 ? ' active' : '');
-                dot.dataset.index = i;
-                dot.addEventListener('click', function() {
-                    if (isTransitioning) return;
-                    const totalItems = track.querySelectorAll('.carousel-item').length;
-                    const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
-                    const target = midIndex + parseInt(this.dataset.index);
-                    goToSlide(target, true);
-                });
-                dotsContainer.appendChild(dot);
-            }
-        }
-
-        function startAutoPlay() {
-            if (autoPlayInterval) clearInterval(autoPlayInterval);
-            autoPlayInterval = setInterval(() => {
-                if (!isPaused) {
-                    nextSlide();
+                if (firstItem && Math.abs(offset) >= itemWidth) {
+                    offset += itemWidth;
+                    track.appendChild(firstItem);
                 }
-            }, 4000);
+
+                track.style.transform = `translateX(${offset}px)`;
+            }
+            animationId = requestAnimationFrame(scrollCarousel);
         }
 
         function togglePause() {
             isPaused = !isPaused;
-            pauseIcon.className = isPaused ? 'fas fa-pause' : 'fas fa-play';
-            pauseLabel.textContent = isPaused ? 'paused' : 'auto';
+            pauseIcon.className = isPaused ? 'fas fa-play' : 'fas fa-pause';
+            pauseLabel.textContent = isPaused ? 'resume' : 'pause';
         }
 
+        // Hover pause/resume
         const wrapper = document.getElementById('carouselWrapper');
         wrapper.addEventListener('mouseenter', () => {
             if (!isPaused) {
                 isPaused = true;
-                pauseIcon.className = 'fas fa-pause';
-                pauseLabel.textContent = 'paused';
+                pauseIcon.className = 'fas fa-play';
+                pauseLabel.textContent = 'resume';
             }
         });
         wrapper.addEventListener('mouseleave', () => {
             if (isPaused) {
                 isPaused = false;
-                pauseIcon.className = 'fas fa-play';
-                pauseLabel.textContent = 'auto';
+                pauseIcon.className = 'fas fa-pause';
+                pauseLabel.textContent = 'pause';
             }
         });
 
-        prevBtn.addEventListener('click', prevSlide);
-        nextBtn.addEventListener('click', nextSlide);
-        document.querySelector('.carousel-pause-indicator').addEventListener('click', togglePause);
+        // Click pause indicator
+        pauseIndicator.addEventListener('click', togglePause);
 
-        let resizeTimeout;
+        // Handle resize
+        let resizeTimeoutCarousel;
         window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                const slideWidth = getSlideWidth();
-                const totalItems = track.querySelectorAll('.carousel-item').length;
-                const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
-                const offset = -midIndex * slideWidth;
+            clearTimeout(resizeTimeoutCarousel);
+            resizeTimeoutCarousel = setTimeout(() => {
+                const itemWidth = getFirstItemWidth();
+                // Adjust offset to prevent large jumps on resize
+                offset = offset % itemWidth;
+                if (offset > 0) offset -= itemWidth;
                 track.style.transition = 'none';
                 track.style.transform = `translateX(${offset}px)`;
-                currentSlide = midIndex;
-                updateDots();
                 setTimeout(() => {
-                    track.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    track.style.transition = '';
                 }, 50);
             }, 200);
         });
@@ -1501,11 +1973,12 @@
         // INIT
         // ============================================================
         buildCarousel();
-        buildDots();
-        startAutoPlay();
+        // Start the infinite scroll loop
+        scrollCarousel();
 
+        // Recalculate offset on window resize
         window.addEventListener('resize', () => {
-            updateDots();
+            // The resize handler inside the carousel section already handles this
         });
     </script>
 </body>
