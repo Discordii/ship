@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infinite Widget Carousel · Cosmic Audit</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #06060e;
+            color: #e8e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.10);
+            animation: floatParticle linear infinite;
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(0.8); opacity: 0; }
+        }
+
+        /* Nebula */
+        .nebula-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.10;
+        }
+        .nebula-glow.g1 {
+            width: 600px;
+            height: 600px;
+            top: -10%;
+            left: -5%;
+            background: radial-gradient(circle, #7b2ffc, transparent 70%);
+        }
+        .nebula-glow.g2 {
+            width: 500px;
+            height: 500px;
+            bottom: -10%;
+            right: -5%;
+            background: radial-gradient(circle, #00d4ff, transparent 70%);
+        }
+
+        /* ----- MAIN CONTAINER ----- */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 1.8rem 1.5rem 3rem;
+        }
+
+        /* ----- HEADER ----- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .header .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .header .brand .logo {
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+        .header .brand .sub {
+            font-size: 0.65rem;
+            color: #6a6a82;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .header .score-pill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            padding: 0.3rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            backdrop-filter: blur(8px);
+        }
+        .header .score-pill .label {
+            font-size: 0.65rem;
+            color: #a0a0b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .header .score-pill .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .header .score-pill .verdict {
+            font-size: 0.6rem;
+            color: #ffd866;
+            background: rgba(255, 200, 50, 0.08);
+            padding: 0.15rem 0.6rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 200, 50, 0.12);
+        }
+
+        /* ===== LARGE ORBIT SECTION ===== */
+        .orbit-section {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0 3rem;
+            min-height: 680px;
+            width: 100%;
+        }
+
+        .hub {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.05), rgba(123, 47, 252, 0.08));
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.03), inset 0 0 60px rgba(123, 47, 252, 0.02);
+            z-index: 5;
+            text-align: center;
+            backdrop-filter: blur(6px);
+            flex-shrink: 0;
+        }
+        .hub .big-score {
+            font-size: 3.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .hub .label {
+            font-size: 0.8rem;
+            color: #a0a0b8;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-top: 0.1rem;
+        }
+        .hub .sub-label {
+            font-size: 0.6rem;
+            color: #6a6a82;
+        }
+
+        .orbit-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            pointer-events: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .orbit-ring.r1 { width: 500px; height: 500px; border-color: rgba(0, 212, 255, 0.04); }
+        .orbit-ring.r2 { width: 640px; height: 640px; border-color: rgba(123, 47, 252, 0.03); }
+        .orbit-ring.r3 { width: 780px; height: 780px; border-color: rgba(255, 45, 149, 0.02); }
+
+        .node {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+            text-align: center;
+            padding: 0.2rem;
+            transform: translate(-50%, -50%);
+            will-change: left, top;
+        }
+        .node:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        .node .icon { font-size: 1.6rem; margin-bottom: 0.05rem; }
+        .node .name { font-size: 0.55rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: #b0b0c8; line-height: 1.1; }
+        .node .score-badge { font-size: 0.55rem; font-weight: 600; background: rgba(0,0,0,0.3); padding: 0.05rem 0.4rem; border-radius: 20px; margin-top: 0.05rem; border: 1px solid rgba(255,255,255,0.04); }
+        .node.high .score-badge { color: #00e676; }
+        .node.mid .score-badge { color: #ffb347; }
+        .node.low .score-badge { color: #ff4d6d; }
+
+        /* ----- DETAIL OVERLAY ----- */
+        .detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .detail-overlay.open { display: flex; }
+        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        .detail-panel {
+            background: rgba(20, 20, 34, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 32px;
+            max-width: 540px;
+            width: 100%;
+            padding: 2rem 1.8rem 1.8rem;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7);
+            position: relative;
+            animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            backdrop-filter: blur(16px);
+        }
+        @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+        .detail-panel .close-btn {
+            position: absolute;
+            top: 0.8rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #6a6a82;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .detail-panel .close-btn:hover { color: #fff; }
+
+        .detail-panel .d-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+        .detail-panel .d-header .d-icon {
+            font-size: 1.6rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .detail-panel .d-header .d-title { font-size: 1.2rem; font-weight: 600; }
+        .detail-panel .d-header .d-sub { font-size: 0.7rem; color: #a0a0b8; display: block; font-weight: 400; }
+
+        .detail-panel .d-score {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.4rem 0 0.6rem;
+            padding: 0.3rem 0.6rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .detail-panel .d-score .num { font-size: 1.5rem; font-weight: 700; }
+        .detail-panel .d-score .bar { flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+        .detail-panel .d-score .bar .fill { height: 100%; border-radius: 12px; width: 0%; }
+        .detail-panel .d-score .tag { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; padding: 0.05rem 0.6rem; border-radius: 40px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); }
+
+        .detail-panel .d-idea {
+            font-size: 0.85rem;
+            color: #b0b0c8;
+            padding: 0.3rem 0.6rem;
+            background: rgba(255,255,255,0.01);
+            border-radius: 12px;
+            border-left: 2px solid rgba(255,255,255,0.04);
+            margin: 0.3rem 0 0.6rem;
+        }
+        .detail-panel .d-pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 0.6rem;
+        }
+        .detail-panel .d-pros-cons .block { font-size: 0.75rem; color: #b0b0c8; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.01); border-radius: 10px; }
+        .detail-panel .d-pros-cons .block strong { color: #e8e8f0; }
+        .detail-panel .d-pros-cons .block .emoji { margin-right: 4px; }
+
+        .detail-panel .d-action {
+            background: rgba(0, 212, 255, 0.02);
+            border: 1px solid rgba(0, 212, 255, 0.04);
+            border-radius: 14px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            color: #b0b0c8;
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+        .detail-panel .d-action i { color: #00d4ff; margin-top: 0.1rem; }
+        .detail-panel .d-action strong { color: #e8e8f0; }
+
+        /* ===== INFINITE CAROUSEL ===== */
+        .carousel-section {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .carousel-section .section-title {
+            font-size: 1.4rem;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 0.2rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .carousel-section .section-sub {
+            text-align: center;
+            color: #6a6a82;
+            font-size: 0.8rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            padding: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 1.2rem;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+            padding: 0.2rem 0.5rem;
+        }
+
+        .carousel-item {
+            min-width: 220px;
+            flex: 0 0 auto;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            padding: 1.2rem 1rem 1.2rem;
+            backdrop-filter: blur(6px);
+            text-align: center;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .carousel-item:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .carousel-item .widget-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #c0c0d8;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.03em;
+        }
+        .carousel-item .widget-desc {
+            font-size: 0.6rem;
+            color: #6a6a82;
+            margin-bottom: 0.6rem;
+        }
+
+        /* --- Widgets --- */
+        .wheel-sm {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto 0.4rem;
+            transition: transform 2.5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.03);
+        }
+        .wheel-sm .seg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(50% 50%, 100% 0, 50% 0);
+            transform-origin: 50% 50%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 4px rgba(0,0,0,0.3);
+        }
+        .wheel-sm .dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: #0a0a14;
+            border: 2px solid #00d4ff;
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
+        }
+        .spin-sm-btn {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.08);
+            color: #00d4ff;
+            padding: 0.15rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.55rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .spin-sm-btn:hover { background: rgba(0, 212, 255, 0.12); }
+        .wheel-result-sm { font-size: 0.65rem; color: #a0a0b8; min-height: 1.2em; margin-top: 0.15rem; }
+
+        .react-sm {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 0.6rem;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+        .react-sm.waiting { background: rgba(255, 200, 50, 0.02); border-color: rgba(255, 200, 50, 0.05); }
+        .react-sm.ready { background: rgba(0, 230, 118, 0.02); border-color: rgba(0, 230, 118, 0.05); }
+        .react-sm.click { background: rgba(255, 45, 85, 0.02); border-color: rgba(255, 45, 85, 0.05); }
+        .react-sm .r-status { font-size: 0.7rem; color: #b0b0c8; }
+        .react-sm .r-time { font-size: 1rem; font-weight: 600; color: #00d4ff; margin-top: 0.05rem; }
+        .react-reset-sm {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.04);
+            color: #6a6a82;
+            padding: 0.05rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.5rem;
+            cursor: pointer;
+            margin-top: 0.15rem;
+        }
+
+        .clock-sm .c-time {
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            transition: color 0.5s;
+        }
+        .clock-sm .c-date { font-size: 0.5rem; color: #6a6a82; }
+        .clock-sm .c-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.04);
+            margin: 0.2rem auto 0;
+            transition: background 0.5s;
+        }
+
+        .counter-display {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-variant-numeric: tabular-nums;
+        }
+        .counter-label { font-size: 0.6rem; color: #6a6a82; margin-top: 0.1rem; }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0.3rem 0;
+        }
+        .progress-track .fill {
+            height: 100%;
+            border-radius: 12px;
+            width: 0%;
+            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            transition: width 0.1s linear;
+        }
+        .progress-label { font-size: 0.6rem; color: #a0a0b8; }
+        .progress-value { font-size: 0.8rem; font-weight: 600; color: #00d4ff; }
+
+        .weather-icon { font-size: 2rem; }
+        .weather-temp { font-size: 1.6rem; font-weight: 600; color: #c0c0d8; }
+        .weather-desc { font-size: 0.6rem; color: #6a6a82; }
+
+        .typing-display {
+            font-size: 0.8rem;
+            color: #b0b0c8;
+            min-height: 2.4rem;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.04em;
+            word-break: break-word;
+        }
+        .typing-display .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: #00d4ff;
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .pulse-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.02);
+            border: 2px solid rgba(0, 212, 255, 0.08);
+            margin: 0 auto 0.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: pulseRing 2s ease-in-out infinite;
+        }
+        @keyframes pulseRing {
+            0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.1); }
+            50% { box-shadow: 0 0 0 12px rgba(0, 212, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
+        }
+        .pulse-ring .inner { font-size: 1.2rem; color: #00d4ff; }
+        .pulse-label { font-size: 0.6rem; color: #6a6a82; }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+        }
+        .carousel-controls button {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: #a0a0b8;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        .carousel-controls button:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 0.4rem;
+        }
+        .carousel-dots .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+            padding: 0;
+        }
+        .carousel-dots .dot.active {
+            background: #00d4ff;
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+            width: 16px;
+            border-radius: 4px;
+        }
+        .carousel-dots .dot:hover { background: rgba(255, 255, 255, 0.15); }
+
+        .carousel-pause-indicator {
+            font-size: 0.55rem;
+            color: #6a6a82;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+        }
+
+        /* ----- FOOTER ----- */
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.65rem;
+            color: #6a6a82;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            padding-top: 1.8rem;
+            letter-spacing: 0.03em;
+        }
+        .footer .badges {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 0.3rem;
+        }
+        .footer .badges span {
+            background: rgba(255,255,255,0.02);
+            padding: 0.05rem 0.6rem;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.02);
+            font-size: 0.55rem;
+            color: #a0a0b8;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 900px) {
+            .orbit-section { min-height: 550px; }
+            .hub { width: 160px; height: 160px; }
+            .hub .big-score { font-size: 2.8rem; }
+            .orbit-ring.r1 { width: 400px; height: 400px; }
+            .orbit-ring.r2 { width: 520px; height: 520px; }
+            .orbit-ring.r3 { width: 640px; height: 640px; }
+            .node { width: 70px; height: 70px; }
+            .node .icon { font-size: 1.2rem; }
+            .node .name { font-size: 0.45rem; }
+            .node .score-badge { font-size: 0.45rem; }
+            .detail-panel { max-width: 95%; padding: 1.2rem; }
+            .detail-panel .d-pros-cons { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .header { flex-direction: column; align-items: stretch; text-align: center; }
+            .header .score-pill { justify-content: center; }
+            .orbit-section { min-height: 420px; padding: 1rem 0; }
+            .hub { width: 120px; height: 120px; }
+            .hub .big-score { font-size: 2rem; }
+            .orbit-ring.r1 { width: 300px; height: 300px; }
+            .orbit-ring.r2 { width: 380px; height: 380px; }
+            .orbit-ring.r3 { width: 460px; height: 460px; }
+            .node { width: 56px; height: 56px; }
+            .node .icon { font-size: 0.9rem; }
+            .node .name { font-size: 0.35rem; }
+            .node .score-badge { font-size: 0.35rem; padding: 0.02rem 0.25rem; }
+            .carousel-item { min-width: 160px; }
+            .counter-display { font-size: 1.6rem; }
+            .weather-temp { font-size: 1.2rem; }
+            .clock-sm .c-time { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PARTICLES -->
+    <div class="particles" id="particles"></div>
+    <div class="nebula-glow g1"></div>
+    <div class="nebula-glow g2"></div>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="brand">
+                <span class="logo">⟁ Command Bridge</span>
+                <span class="sub">universe audit</span>
+            </div>
+            <div class="score-pill">
+                <span class="label">Overall</span>
+                <span class="value">5.5</span>
+                <span class="verdict">fragmented</span>
+            </div>
+        </header>
+
+        <!-- LARGE ORBIT SECTION -->
+        <section class="orbit-section" id="orbitSection">
+            <div class="orbit-ring r1"></div>
+            <div class="orbit-ring r2"></div>
+            <div class="orbit-ring r3"></div>
+            <div class="hub">
+                <div class="big-score">5.5</div>
+                <div class="label">/ 10</div>
+                <div class="sub-label">7 worlds</div>
+            </div>
+            <div id="nodesContainer"></div>
+        </section>
+
+        <!-- DETAIL OVERLAY -->
+        <div class="detail-overlay" id="detailOverlay">
+            <div class="detail-panel">
+                <button class="close-btn" id="closeDetail"><i class="fas fa-times"></i></button>
+                <div id="detailContent"></div>
+            </div>
+        </div>
+
+        <!-- INFINITE CAROUSEL -->
+        <section class="carousel-section">
+            <h3 class="section-title"><i class="fas fa-infinity" style="margin-right:8px;font-size:1.2rem;"></i> Infinite Widget Carousel</h3>
+            <p class="section-sub">8 interactive FedPromptly widgets · auto‑scrolls forever</p>
+
+            <div class="carousel-wrapper" id="carouselWrapper">
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Widgets populated by JS -->
+                </div>
+            </div>
+
+            <div class="carousel-controls">
+                <button id="carouselPrev" title="Previous"><i class="fas fa-chevron-left"></i></button>
+                <div class="carousel-dots" id="carouselDots"></div>
+                <button id="carouselNext" title="Next"><i class="fas fa-chevron-right"></i></button>
+                <div class="carousel-pause-indicator">
+                    <i class="fas fa-play" id="pauseIcon"></i>
+                    <span id="pauseLabel">auto</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="badges">
+                <span><i class="fas fa-circle" style="color:#00e676;font-size:0.35rem;"></i> Focus 70%</span>
+                <span><i class="fas fa-circle" style="color:#ffb347;font-size:0.35rem;"></i> Rebrand 20%</span>
+                <span><i class="fas fa-circle" style="color:#ff4d6d;font-size:0.35rem;"></i> Kill / Isolate 10%</span>
+            </div>
+            <p style="margin-top:0.6rem;">Hover carousel to pause · click nodes to inspect worlds · widgets are live</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // DATA (worlds)
+        // ============================================================
+        const worlds = [{
+            id: 'fedpromptly',
+            name: 'FedPromptly',
+            sub: 'AI Widget Marketplace',
+            score: 7.8,
+            color: '#00d4ff',
+            icon: 'fa-code',
+            idea: 'Social marketplace + AI prompt-to-code for embeddable web widgets.',
+            pros: 'Unique anti‑NFT angle; real painkiller for non‑coders; innovative CPM embed monetization.',
+            cons: 'Free hosting kills trust; competing against giants; messaging confuses non‑coders.',
+            action: 'Move to proper hosting (Vercel / DO). Pick one niche: “engagement widgets for bloggers.” Make this your 100% focus.'
+        }, {
+            id: 'pokejumper',
+            name: 'PokeJumper',
+            sub: 'Pokémon Fan‑Games & RPGs',
+            score: 3.5,
+            color: '#ff4d6d',
+            icon: 'fa-gamepad',
+            idea: 'Fan‑made Pokémon RPGs, ROM hacks, manga, and a 30% affiliate program.',
+            pros: 'Massive nostalgic audience; well‑structured affiliate model (30% recurring).',
+            cons: 'Charging for Nintendo IP is a legal time‑bomb. Cease & desist inevitable.',
+            action: 'Rebrand to “Pocket Creatures” or “Monster Tamer RPG.” Remove all official Pokémon assets. Build your own IP.'
+        }, {
+            id: 'potatochat',
+            name: 'Potato Chat',
+            sub: 'LordBAKiNG Community',
+            score: 4.5,
+            color: '#ffb347',
+            icon: 'fa-comment-dots',
+            idea: 'Paid private chat group ($2.99/mo) across Discord, Telegram & Keet.',
+            pros: 'Low barrier; Keet integration is cool; loyal community potential.',
+            cons: 'Zero differentiation—why pay for this? Brand doesn\'t communicate value.',
+            action: 'Merge into FedPromptly as “Insiders Discord” — a perk for widget creators. Don\'t keep it as a standalone brand.'
+        }, {
+            id: 'viraldancando',
+            name: 'Viral Dancando',
+            sub: 'Dance / Funk Social Media',
+            score: 6.5,
+            color: '#ff8c00',
+            icon: 'fa-music',
+            idea: 'Brazilian funk / dance trends on TikTok, Instagram & YouTube Shorts.',
+            pros: 'High viral potential; great for brand deals; fun to create.',
+            cons: 'Zero synergy with tech brands; algorithm confusion; trend‑dependent.',
+            action: 'Keep as a separate hobby account. Do not link to FedPromptly. Use it for fun or to test video widgets—but keep branding isolated.'
+        }, {
+            id: 'fedu',
+            name: 'FedU / FED4kids',
+            sub: 'Educational Wing',
+            score: 6.0,
+            color: '#ffb347',
+            icon: 'fa-graduation-cap',
+            idea: 'Teaching AI, coding, web literacy & finance (Poké‑Economy) to all ages.',
+            pros: 'Educational content has strong SEO longevity; underserved senior market.',
+            cons: 'Mixing kids & adults = COPPA/GDPR nightmare; Pokémon tie‑in again risks Nintendo.',
+            action: 'Split: FED4kids → ad‑free static site (no data collection). FedU → /learn subfolder on FedPromptly for adults. Never mix audiences in one DB.'
+        }, {
+            id: 'dfans',
+            name: 'DFans',
+            sub: 'Fansly / OF Alternative',
+            score: 2.0,
+            color: '#ff2d55',
+            icon: 'fa-lock',
+            idea: 'Adult content platform hidden behind a “medical / educational” disclaimer.',
+            pros: 'Adult content is highly profitable.',
+            cons: 'Payment fraud risk—Stripe/PayPal will blacklist you. Legal theater won\'t hold. Poisons FedPromptly brand.',
+            action: 'Drop it entirely — or spin off as a separate LLC with adult‑friendly processors (CCBill/Segpay) on a completely different domain. Never mention it near FedPromptly.'
+        }, {
+            id: 'fedos',
+            name: 'FED‑OS / FEDCloud',
+            sub: 'Independent Web Infrastructure',
+            score: 1.5,
+            color: '#ff2d55',
+            icon: 'fa-cloud',
+            idea: 'Building an operating system & cloud platform — crowdfunded via GoFundMe.',
+            pros: 'Shows ambition; great long‑term North Star.',
+            cons: 'OS takes billions of dollars & thousands of engineers. GoFundMe makes you look naive. Drains credibility from actual products.',
+            action: 'Archive it. Delete GoFundMe. Stop talking about “building an OS.” When you have 10,000 paying FedPromptly customers, then build the cloud infrastructure for them.'
+        }];
+
+        // ============================================================
+        // ORBIT NODES (LARGE)
+        // ============================================================
+        const nodesContainer = document.getElementById('nodesContainer');
+        const orbitSection = document.getElementById('orbitSection');
+
+        let nodeElements = [];
+        worlds.forEach((w, i) => {
+            const div = document.createElement('div');
+            const scoreClass = w.score >= 7 ? 'high' : (w.score >= 4.5 ? 'mid' : 'low');
+            div.className = `node ${scoreClass}`;
+            div.dataset.id = w.id;
+            div.innerHTML = `
+                <span class="icon"><i class="fas ${w.icon}"></i></span>
+                <span class="name">${w.name}</span>
+                <span class="score-badge">${w.score}</span>
+            `;
+            nodesContainer.appendChild(div);
+            nodeElements.push(div);
+        });
+
+        nodeElements.forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = this.dataset.id;
+                const world = worlds.find(w => w.id === id);
+                if (world) openDetail(world);
+            });
+        });
+
+        // Orbit animation - larger radius
+        let angle = 0;
+        const speed = 0.0018;
+        const count = worlds.length;
+        const angleStep = (2 * Math.PI) / count;
+        let radius = 280;
+
+        function getRadius() {
+            const rect = orbitSection.getBoundingClientRect();
+            const minDim = Math.min(rect.width, rect.height);
+            return Math.min(minDim * 0.42, 340);
+        }
+        radius = getRadius();
+        window.addEventListener('resize', () => { radius = getRadius(); });
+
+        function animateOrbit() {
+            angle += speed;
+            const rect = orbitSection.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            const rx = (radius / w) * 100;
+            const ry = (radius / h) * 100;
+            const cx = 50,
+                cy = 50;
+
+            nodeElements.forEach((el, i) => {
+                const nodeAngle = angle + i * angleStep;
+                el.style.left = (cx + rx * Math.cos(nodeAngle)) + '%';
+                el.style.top = (cy + ry * Math.sin(nodeAngle)) + '%';
+            });
+            requestAnimationFrame(animateOrbit);
+        }
+        setTimeout(animateOrbit, 300);
+
+        // ============================================================
+        // DETAIL PANEL
+        // ============================================================
+        const overlay = document.getElementById('detailOverlay');
+        const detailContent = document.getElementById('detailContent');
+        const closeBtn = document.getElementById('closeDetail');
+
+        function openDetail(w) {
+            const fillPercent = (w.score / 10) * 100;
+            const color = w.color;
+            detailContent.innerHTML = `
+                <div class="d-header">
+                    <div class="d-icon" style="color:${color};"><i class="fas ${w.icon}"></i></div>
+                    <div class="d-title">${w.name} <span class="d-sub">${w.sub}</span></div>
+                </div>
+                <div class="d-score">
+                    <span class="num" style="color:${color};">${w.score}</span>
+                    <div class="bar"><div class="fill" style="width:${fillPercent}%;background:${color};"></div></div>
+                    <span class="tag" style="color:${color};border-color:${color}22;">${w.score >= 7 ? 'strong' : (w.score >= 4.5 ? 'mid' : 'low')}</span>
+                </div>
+                <div class="d-idea"><i class="fas fa-lightbulb" style="color:${color};margin-right:6px;"></i>${w.idea}</div>
+                <div class="d-pros-cons">
+                    <div class="block"><span class="emoji">✅</span><strong>Pros:</strong> ${w.pros}</div>
+                    <div class="block"><span class="emoji">⚠️</span><strong>Cons:</strong> ${w.cons}</div>
+                </div>
+                <div class="d-action">
+                    <i class="fas fa-bullseye"></i>
+                    <span><strong>Action:</strong> ${w.action}</span>
+                </div>
+            `;
+            overlay.classList.add('open');
+        }
+
+        closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('open');
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) overlay.classList.remove('open');
+        });
+
+        // ============================================================
+        // PARTICLES
+        // ============================================================
+        (function() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = 2 + Math.random() * 4;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = 20 + Math.random() * 40 + 's';
+                p.style.animationDelay = Math.random() * 30 + 's';
+                p.style.opacity = 0.15 + Math.random() * 0.25;
+                container.appendChild(p);
+            }
+        })();
+
+        // ============================================================
+        // INFINITE CAROUSEL
+        // ============================================================
+        const track = document.getElementById('carouselTrack');
+        const dotsContainer = document.getElementById('carouselDots');
+        const prevBtn = document.getElementById('carouselPrev');
+        const nextBtn = document.getElementById('carouselNext');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const pauseLabel = document.getElementById('pauseLabel');
+
+        // --- Widget definitions (8 widgets) ---
+        const widgetTypes = [
+            { id: 'spinner', label: 'Spinner', desc: 'tap to spin' },
+            { id: 'reaction', label: 'Reaction', desc: 'click on green' },
+            { id: 'clock', label: 'Color Clock', desc: 'ambient hue' },
+            { id: 'counter', label: 'Live Counter', desc: 'auto-increment' },
+            { id: 'progress', label: 'Progress Bar', desc: 'cycles 0→100%' },
+            { id: 'weather', label: 'Weather', desc: 'fake forecast' },
+            { id: 'typing', label: 'Type Effect', desc: 'animated text' },
+            { id: 'pulse', label: 'Pulse Ring', desc: 'beating heart' }
+        ];
+
+        // Build widget HTML
+        function buildWidgetHTML(type, index) {
+            let inner = '';
+            const uid = 'w' + index;
+
+            switch (type.id) {
+                case 'spinner':
+                    inner = `
+                        <div class="wheel-sm" id="${uid}Wheel">
+                            <div class="seg" style="transform:rotate(0deg);background:#ff4d6d;">1</div>
+                            <div class="seg" style="transform:rotate(45deg);background:#ffb347;">2</div>
+                            <div class="seg" style="transform:rotate(90deg);background:#ffd866;">3</div>
+                            <div class="seg" style="transform:rotate(135deg);background:#00e676;">4</div>
+                            <div class="seg" style="transform:rotate(180deg);background:#00d4ff;">5</div>
+                            <div class="seg" style="transform:rotate(225deg);background:#7b2ffc;">6</div>
+                            <div class="seg" style="transform:rotate(270deg);background:#ff2d95;">7</div>
+                            <div class="seg" style="transform:rotate(315deg);background:#ff8c00;">8</div>
+                            <div class="dot"></div>
+                        </div>
+                        <button class="spin-sm-btn" id="${uid}SpinBtn"><i class="fas fa-play"></i> Spin</button>
+                        <div class="wheel-result-sm" id="${uid}Result">🎯 ready</div>
+                    `;
+                    break;
+
+                case 'reaction':
+                    inner = `
+                        <div class="react-sm waiting" id="${uid}React">
+                            <div class="r-status" id="${uid}Status">⌛ waiting...</div>
+                            <div class="r-time" id="${uid}Time">—</div>
+                        </div>
+                        <button class="react-reset-sm" id="${uid}Reset"><i class="fas fa-undo"></i> reset</button>
+                    `;
+                    break;
+
+                case 'clock':
+                    inner = `
+                        <div class="clock-sm">
+                            <div class="c-time" id="${uid}ClockTime">12:00:00</div>
+                            <div class="c-date" id="${uid}ClockDate">Jan 1</div>
+                            <div class="c-dot" id="${uid}ClockDot" style="background:#00d4ff;"></div>
+                        </div>
+                    `;
+                    break;
+
+                case 'counter':
+                    inner = `
+                        <div class="counter-display" id="${uid}Counter">0</div>
+                        <div class="counter-label">auto-counting</div>
+                    `;
+                    break;
+
+                case 'progress':
+                    inner = `
+                        <div class="progress-value" id="${uid}ProgVal">0%</div>
+                        <div class="progress-track"><div class="fill" id="${uid}ProgFill" style="width:0%;"></div></div>
+                        <div class="progress-label">cycling</div>
+                    `;
+                    break;
+
+                case 'weather':
+                    inner = `
+                        <div class="weather-icon" id="${uid}WeatherIcon">☀️</div>
+                        <div class="weather-temp" id="${uid}WeatherTemp">22°C</div>
+                        <div class="weather-desc" id="${uid}WeatherDesc">Sunny</div>
+                    `;
+                    break;
+
+                case 'typing':
+                    inner = `
+                        <div class="typing-display" id="${uid}Typing">_</div>
+                    `;
+                    break;
+
+                case 'pulse':
+                    inner = `
+                        <div class="pulse-ring" id="${uid}Pulse">
+                            <div class="inner"><i class="fas fa-heart" style="color:#ff4d6d;"></i></div>
+                        </div>
+                        <div class="pulse-label">❤️ beating</div>
+                    `;
+                    break;
+
+                default:
+                    inner = '<div style="color:#6a6a82;">widget</div>';
+            }
+
+            return `
+                <div class="carousel-item" data-type="${type.id}" data-index="${index}">
+                    <div class="widget-label"><i class="fas fa-cube" style="font-size:0.5rem;color:#00d4ff;margin-right:4px;"></i> ${type.label}</div>
+                    <div class="widget-desc">${type.desc}</div>
+                    ${inner}
+                </div>
+            `;
+        }
+
+        function buildCarousel() {
+            track.innerHTML = '';
+            for (let copy = 0; copy < 3; copy++) {
+                widgetTypes.forEach((type, i) => {
+                    const idx = copy * widgetTypes.length + i;
+                    const html = buildWidgetHTML(type, idx);
+                    track.insertAdjacentHTML('beforeend', html);
+                });
+            }
+            initWidgets();
+            updateDots();
+            goToSlide(1);
+        }
+
+        // --- Carousel state ---
+        let currentSlide = 0;
+        const totalSlides = widgetTypes.length;
+        let autoPlayInterval = null;
+        let isPaused = false;
+        let isTransitioning = false;
+
+        function getSlideWidth() {
+            const firstItem = track.querySelector('.carousel-item');
+            if (!firstItem) return 220;
+            return firstItem.offsetWidth + 12;
+        }
+
+        function goToSlide(index, animate = true) {
+            if (isTransitioning) return;
+            const slideWidth = getSlideWidth();
+            const offset = -index * slideWidth;
+            track.style.transition = animate ? 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+            track.style.transform = `translateX(${offset}px)`;
+            currentSlide = index;
+            updateDots();
+        }
+
+        function nextSlide() {
+            if (isTransitioning) return;
+            const slideWidth = getSlideWidth();
+            const totalItems = track.querySelectorAll('.carousel-item').length;
+            const maxIndex = totalItems - 1;
+
+            if (currentSlide >= maxIndex - 1) {
+                isTransitioning = true;
+                goToSlide(currentSlide + 1, true);
+                setTimeout(() => {
+                    track.style.transition = 'none';
+                    const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
+                    const offset = -midIndex * slideWidth;
+                    track.style.transform = `translateX(${offset}px)`;
+                    currentSlide = midIndex;
+                    updateDots();
+                    setTimeout(() => {
+                        track.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        isTransitioning = false;
+                    }, 50);
+                }, 750);
+            } else {
+                goToSlide(currentSlide + 1, true);
+            }
+        }
+
+        function prevSlide() {
+            if (isTransitioning) return;
+            const slideWidth = getSlideWidth();
+            const totalItems = track.querySelectorAll('.carousel-item').length;
+            const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
+
+            if (currentSlide <= 0) {
+                isTransitioning = true;
+                goToSlide(currentSlide - 1, true);
+                setTimeout(() => {
+                    track.style.transition = 'none';
+                    const offset = -midIndex * slideWidth;
+                    track.style.transform = `translateX(${offset}px)`;
+                    currentSlide = midIndex;
+                    updateDots();
+                    setTimeout(() => {
+                        track.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        isTransitioning = false;
+                    }, 50);
+                }, 750);
+            } else {
+                goToSlide(currentSlide - 1, true);
+            }
+        }
+
+        function updateDots() {
+            const totalItems = track.querySelectorAll('.carousel-item').length;
+            const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
+            const relativeIndex = currentSlide - midIndex;
+            const dots = dotsContainer.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === relativeIndex);
+            });
+        }
+
+        function buildDots() {
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'dot' + (i === 0 ? ' active' : '');
+                dot.dataset.index = i;
+                dot.addEventListener('click', function() {
+                    if (isTransitioning) return;
+                    const totalItems = track.querySelectorAll('.carousel-item').length;
+                    const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
+                    const target = midIndex + parseInt(this.dataset.index);
+                    goToSlide(target, true);
+                });
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function startAutoPlay() {
+            if (autoPlayInterval) clearInterval(autoPlayInterval);
+            autoPlayInterval = setInterval(() => {
+                if (!isPaused) {
+                    nextSlide();
+                }
+            }, 4000);
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseIcon.className = isPaused ? 'fas fa-pause' : 'fas fa-play';
+            pauseLabel.textContent = isPaused ? 'paused' : 'auto';
+        }
+
+        const wrapper = document.getElementById('carouselWrapper');
+        wrapper.addEventListener('mouseenter', () => {
+            if (!isPaused) {
+                isPaused = true;
+                pauseIcon.className = 'fas fa-pause';
+                pauseLabel.textContent = 'paused';
+            }
+        });
+        wrapper.addEventListener('mouseleave', () => {
+            if (isPaused) {
+                isPaused = false;
+                pauseIcon.className = 'fas fa-play';
+                pauseLabel.textContent = 'auto';
+            }
+        });
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        document.querySelector('.carousel-pause-indicator').addEventListener('click', togglePause);
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const slideWidth = getSlideWidth();
+                const totalItems = track.querySelectorAll('.carousel-item').length;
+                const midIndex = Math.floor(totalItems / 2) - Math.floor(totalSlides / 2);
+                const offset = -midIndex * slideWidth;
+                track.style.transition = 'none';
+                track.style.transform = `translateX(${offset}px)`;
+                currentSlide = midIndex;
+                updateDots();
+                setTimeout(() => {
+                    track.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                }, 50);
+            }, 200);
+        });
+
+        // ============================================================
+        // WIDGET LOGIC
+        // ============================================================
+        function initWidgets() {
+            // Spinners
+            document.querySelectorAll('.wheel-sm').forEach((wheel, idx) => {
+                const uid = wheel.id;
+                const btn = document.getElementById(uid.replace('Wheel', 'SpinBtn'));
+                const result = document.getElementById(uid.replace('Wheel', 'Result'));
+                if (!btn) return;
+                let angle = 0,
+                    spinning = false;
+                btn.addEventListener('click', () => {
+                    if (spinning) return;
+                    spinning = true;
+                    result.textContent = '🌀 spinning...';
+                    const extra = 4 + Math.random() * 4;
+                    const rand = Math.floor(Math.random() * 360);
+                    const newAngle = angle + (extra * 360) + rand;
+                    wheel.style.transform = `rotate(${newAngle}deg)`;
+                    angle = newAngle;
+                    const normalized = ((newAngle % 360) + 360) % 360;
+                    const seg = Math.floor(normalized / 45);
+                    const options = ['1', '2', '3', '4', '5', '6', '7', '8'];
+                    setTimeout(() => {
+                        result.textContent = `🎯 ${options[seg % 8]}`;
+                        spinning = false;
+                    }, 2600);
+                });
+            });
+
+            // Reactions
+            document.querySelectorAll('.react-sm').forEach((react, idx) => {
+                const uid = react.id;
+                const status = document.getElementById(uid.replace('React', 'Status'));
+                const time = document.getElementById(uid.replace('React', 'Time'));
+                const resetBtn = document.getElementById(uid.replace('React', 'Reset'));
+                let state = 'waiting',
+                    timeout = null,
+                    start = 0,
+                    locked = false;
+
+                function setState(s) {
+                    state = s;
+                    react.className = 'react-sm ' + s;
+                    if (s === 'waiting') { status.textContent = '⌛ waiting...';
+                        time.textContent = '—'; } else if (s === 'ready') { status.textContent = '🟢 CLICK!';
+                        time.textContent = '—'; } else if (s === 'click') { status.textContent = '⏱️ too early';
+                        time.textContent = '—'; }
+                }
+
+                function startRound() {
+                    if (locked) return;
+                    locked = true;
+                    setState('waiting');
+                    time.textContent = '—';
+                    const delay = 800 + Math.random() * 2500;
+                    timeout = setTimeout(() => { setState('ready');
+                        start = performance.now();
+                        locked = false; }, delay);
+                }
+
+                react.addEventListener('click', function(e) {
+                    if (state === 'ready') {
+                        const elapsed = (performance.now() - start).toFixed(1);
+                        time.textContent = elapsed + ' ms';
+                        status.textContent = '✅ done';
+                        clearTimeout(timeout);
+                        locked = false;
+                        setState('waiting');
+                        status.textContent = '✅ done';
+                        setTimeout(() => { status.textContent = '⌛ waiting...'; }, 1500);
+                    } else if (state === 'waiting') {
+                        clearTimeout(timeout);
+                        setState('click');
+                        status.textContent = '⏱️ too early! reset';
+                        locked = true;
+                    }
+                });
+
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        clearTimeout(timeout);
+                        locked = false;
+                        setState('waiting');
+                        status.textContent = '⌛ waiting...';
+                        time.textContent = '—';
+                        setTimeout(startRound, 400);
+                    });
+                }
+                setTimeout(startRound, 500 + Math.random() * 500);
+            });
+
+            // Clocks
+            document.querySelectorAll('.clock-sm').forEach((clock, idx) => {
+                const uid = clock.querySelector('.c-time')?.id?.replace('ClockTime', '') || 'w' + idx;
+                const timeEl = document.getElementById(uid + 'ClockTime');
+                const dateEl = document.getElementById(uid + 'ClockDate');
+                const dotEl = document.getElementById(uid + 'ClockDot');
+                if (timeEl) {
+                    function update() {
+                        const now = new Date();
+                        const h = String(now.getHours()).padStart(2, '0');
+                        const m = String(now.getMinutes()).padStart(2, '0');
+                        const s = String(now.getSeconds()).padStart(2, '0');
+                        timeEl.textContent = `${h}:${m}:${s}`;
+                        if (dateEl) {
+                            dateEl.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        }
+                        const hue = (now.getHours() / 24) * 360;
+                        const color = `hsl(${hue}, 80%, 60%)`;
+                        timeEl.style.color = color;
+                        if (dotEl) dotEl.style.background = color;
+                    }
+                    update();
+                    setInterval(update, 1000);
+                }
+            });
+
+            // Counters
+            document.querySelectorAll('.counter-display').forEach((el, idx) => {
+                let val = 0;
+                setInterval(() => {
+                    val += 1 + Math.floor(Math.random() * 5);
+                    el.textContent = val.toLocaleString();
+                }, 300 + Math.random() * 400);
+            });
+
+            // Progress
+            document.querySelectorAll('.progress-track').forEach((trackEl, idx) => {
+                const fill = trackEl.querySelector('.fill');
+                const valEl = trackEl.parentElement?.querySelector('.progress-value');
+                if (!fill) return;
+                let p = 0,
+                    dir = 1;
+                setInterval(() => {
+                    p += dir * (0.5 + Math.random() * 1.5);
+                    if (p >= 100) { p = 100;
+                        dir = -1; }
+                    if (p <= 0) { p = 0;
+                        dir = 1; }
+                    fill.style.width = p + '%';
+                    if (valEl) valEl.textContent = Math.round(p) + '%';
+                }, 60);
+            });
+
+            // Weather
+            const weatherStates = [
+                { icon: '☀️', temp: '22°C', desc: 'Sunny' },
+                { icon: '⛅', temp: '18°C', desc: 'Partly Cloudy' },
+                { icon: '🌧️', temp: '12°C', desc: 'Rainy' },
+                { icon: '❄️', temp: '-2°C', desc: 'Snowy' },
+                { icon: '🌤️', temp: '25°C', desc: 'Clear' },
+                { icon: '🌦️', temp: '16°C', desc: 'Light Rain' }
+            ];
+            document.querySelectorAll('.weather-icon').forEach((el, idx) => {
+                const tempEl = el.parentElement?.querySelector('.weather-temp');
+                const descEl = el.parentElement?.querySelector('.weather-desc');
+                let wi = 0;
+                setInterval(() => {
+                    wi = (wi + 1) % weatherStates.length;
+                    const w = weatherStates[wi];
+                    el.textContent = w.icon;
+                    if (tempEl) tempEl.textContent = w.temp;
+                    if (descEl) descEl.textContent = w.desc;
+                }, 3000 + Math.random() * 2000);
+            });
+
+            // Typing
+            const phrases = [
+                'Hello, universe!',
+                'FedPromptly widgets rock.',
+                'Code is poetry.',
+                'Infinite carousel ✨',
+                'Live, interactive, fun.',
+                'Digital alchemy at work.',
+                'Embed the future.'
+            ];
+            document.querySelectorAll('.typing-display').forEach((el, idx) => {
+                let phraseIdx = 0,
+                    charIdx = 0,
+                    isDeleting = false;
+                setInterval(() => {
+                    const phrase = phrases[phraseIdx % phrases.length];
+                    if (!isDeleting) {
+                        if (charIdx <= phrase.length) {
+                            el.innerHTML = phrase.substring(0, charIdx) + '<span class="cursor"></span>';
+                            charIdx++;
+                        } else {
+                            isDeleting = true;
+                        }
+                    } else {
+                        if (charIdx >= 0) {
+                            el.innerHTML = phrase.substring(0, charIdx) + '<span class="cursor"></span>';
+                            charIdx--;
+                        } else {
+                            isDeleting = false;
+                            phraseIdx++;
+                            charIdx = 0;
+                        }
+                    }
+                }, 80 + Math.random() * 60);
+            });
+
+            // Pulse
+            document.querySelectorAll('.pulse-ring').forEach((el, idx) => {
+                const inner = el.querySelector('.inner');
+                if (inner) {
+                    setInterval(() => {
+                        const scale = 0.85 + Math.random() * 0.3;
+                        inner.style.transform = `scale(${scale})`;
+                        setTimeout(() => {
+                            inner.style.transform = 'scale(1)';
+                        }, 300);
+                    }, 600 + Math.random() * 800);
+                }
+            });
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        buildCarousel();
+        buildDots();
+        startAutoPlay();
+
+        window.addEventListener('resize', () => {
+            updateDots();
+        });
+    </script>
+</body>
+</html>
